@@ -115,23 +115,21 @@ Index: slock-patches/slock/slock.c
  
  	len = 0;
  	running = True;
-@@ -155,7 +189,30 @@ readpw(Display *dpy, const char *pws)
+@@ -155,7 +189,28 @@ readpw(Display *dpy, const char *pws)
  #ifdef HAVE_BSD_AUTH
  				running = !auth_userokay(getlogin(), NULL, "auth-xlock", passwd);
  #else
 -				running = !!strcmp(crypt(passwd, pws), pws);
++				pw = getpwuid(getuid());
++				retval = pam_start(pam_service, pw->pw_name, &pamc, &pamh);
 +
 +				color = PAM;
-+				fprintf(stderr, "go\n");
 +				for (screen = 0; screen < nscreens; screen++) {
 +					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[color]);
 +					XClearWindow(dpy, locks[screen]->win);
 +					XRaiseWindow(dpy, locks[screen]->win);
 +					XSync(dpy, False);
 +				}
-+
-+				pw = getpwuid(getuid());
-+				retval = pam_start(pam_service, pw->pw_name, &pamc, &pamh);
 +
 +				if (retval == PAM_SUCCESS)
 +					retval = pam_authenticate(pamh, 0);
@@ -147,7 +145,7 @@ Index: slock-patches/slock/slock.c
  #endif
  				if (running) {
  					XBell(dpy, 100);
-@@ -299,10 +356,10 @@ main(int argc, char **argv) {
+@@ -299,10 +354,10 @@ main(int argc, char **argv) {
  	dontkillme();
  #endif
  

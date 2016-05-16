@@ -1,2 +1,4 @@
 #!/bin/sh
 cd "$(dirname "$0")" && ./build && cd slock && make DESTDIR=~/.local PREFIX= install
+sudo chown root.root ~/.local/bin/slock
+sudo chmod u+s ~/.local/bin/slock

@@ -1,6 +1,6 @@
 # Installation
 
-## clone patches repository including the dwm repository
+## clone patches repository including the slock repository
 
     git clone https://github.com/jceb/slock-patches
 
@@ -25,4 +25,4 @@
 
 # Patch References
 
-* [pam_auth.patch](patches/pam_auth.patch)                           (no URL yet)
+* [pam_auth.patch](patches/pam_auth.patch)                           (http://tools.suckless.org/slock/patches/pam_auth)

@@ -1,3 +1,10 @@
+Author: Jan Christoph Ebersbach <jceb@e-jc.de>
+URL: http://tools.suckless.org/slock/patches/pam_auth
+Replaces shadow support with PAM authentication support.
+
+Change variable `pam_service` in `config.def.h` to the corresponding PAM
+service.  The default configuration is for ArchLinux's `login` service.
+
 Index: slock-patches/slock/config.def.h
 ===================================================================
 --- slock-patches.orig/slock/config.def.h

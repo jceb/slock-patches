@@ -123,3 +123,15 @@ Index: slock-patches/slock/slock.c
  #endif
  				if (running) {
  					XBell(dpy, 100);
+@@ -299,10 +344,10 @@ main(int argc, char **argv) {
+ 	dontkillme();
+ #endif
+ 
++#ifndef HAVE_BSD_AUTH
+ 	if (!getpwuid(getuid()))
+ 		die("no passwd entry for you\n");
+ 
+-#ifndef HAVE_BSD_AUTH
+ 	pws = getpw();
+ #endif
+ 

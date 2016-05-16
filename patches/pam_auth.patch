@@ -9,7 +9,12 @@ Index: slock-patches/slock/config.def.h
 ===================================================================
 --- slock-patches.orig/slock/config.def.h
 +++ slock-patches/slock/config.def.h
-@@ -6,3 +6,6 @@ static const char *colorname[NUMCOLS] =
+@@ -2,7 +2,11 @@ static const char *colorname[NUMCOLS] =
+ 	"black",     /* after initialization */
+ 	"#005577",   /* during input */
+ 	"#CC3333",   /* wrong password */
++	"#FCCB1D",   /* waiting for PAM */
+ };
  
  /* treat a cleared input like a wrong password */
  static const int failonclear = 1;
@@ -42,7 +47,15 @@ Index: slock-patches/slock/slock.c
  
  #if HAVE_BSD_AUTH
  #include <login_cap.h>
-@@ -39,6 +41,9 @@ typedef struct {
+@@ -27,6 +29,7 @@ enum {
+ 	INIT,
+ 	INPUT,
+ 	FAILED,
++	PAM,
+ 	NUMCOLS
+ };
+ 
+@@ -39,6 +42,9 @@ typedef struct {
  	unsigned long colors[NUMCOLS];
  } Lock;
  
@@ -52,7 +65,7 @@ Index: slock-patches/slock/slock.c
  static Lock **locks;
  static int nscreens;
  static Bool running = True;
-@@ -112,6 +117,31 @@ getpw(void)
+@@ -112,6 +118,31 @@ getpw(void)
  }
  #endif
  
@@ -84,7 +97,7 @@ Index: slock-patches/slock/slock.c
  static void
  #ifdef HAVE_BSD_AUTH
  readpw(Display *dpy)
-@@ -119,12 +149,15 @@ readpw(Display *dpy)
+@@ -119,12 +150,15 @@ readpw(Display *dpy)
  readpw(Display *dpy, const char *pws)
  #endif
  {
@@ -102,13 +115,24 @@ Index: slock-patches/slock/slock.c
  
  	len = 0;
  	running = True;
-@@ -155,7 +188,19 @@ readpw(Display *dpy, const char *pws)
+@@ -155,7 +189,30 @@ readpw(Display *dpy, const char *pws)
  #ifdef HAVE_BSD_AUTH
  				running = !auth_userokay(getlogin(), NULL, "auth-xlock", passwd);
  #else
 -				running = !!strcmp(crypt(passwd, pws), pws);
++
++				color = PAM;
++				fprintf(stderr, "go\n");
++				for (screen = 0; screen < nscreens; screen++) {
++					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[color]);
++					XClearWindow(dpy, locks[screen]->win);
++					XRaiseWindow(dpy, locks[screen]->win);
++					XSync(dpy, False);
++				}
++
 +				pw = getpwuid(getuid());
 +				retval = pam_start(pam_service, pw->pw_name, &pamc, &pamh);
++
 +				if (retval == PAM_SUCCESS)
 +					retval = pam_authenticate(pamh, 0);
 +				if (retval == PAM_SUCCESS)
@@ -123,7 +147,7 @@ Index: slock-patches/slock/slock.c
  #endif
  				if (running) {
  					XBell(dpy, 100);
-@@ -299,10 +344,10 @@ main(int argc, char **argv) {
+@@ -299,10 +356,10 @@ main(int argc, char **argv) {
  	dontkillme();
  #endif
  

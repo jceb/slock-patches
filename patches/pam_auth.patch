@@ -129,8 +129,8 @@ Index: slock-patches/slock/slock.c
 +					XSetWindowBackground(dpy, locks[screen]->win, locks[screen]->colors[color]);
 +					XClearWindow(dpy, locks[screen]->win);
 +					XRaiseWindow(dpy, locks[screen]->win);
-+					XSync(dpy, False);
 +				}
++				XSync(dpy, False);
 +
 +				if (retval == PAM_SUCCESS)
 +					retval = pam_authenticate(pamh, 0);

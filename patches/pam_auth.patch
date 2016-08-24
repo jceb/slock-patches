@@ -47,7 +47,7 @@ Index: slock-patches/slock/slock.c
  
  #if HAVE_BSD_AUTH
  #include <login_cap.h>
-@@ -27,6 +29,7 @@ enum {
+@@ -32,6 +34,7 @@ enum {
  	INIT,
  	INPUT,
  	FAILED,
@@ -55,7 +55,7 @@ Index: slock-patches/slock/slock.c
  	NUMCOLS
  };
  
-@@ -39,6 +42,9 @@ typedef struct {
+@@ -44,6 +47,9 @@ typedef struct {
  	unsigned long colors[NUMCOLS];
  } Lock;
  
@@ -65,7 +65,7 @@ Index: slock-patches/slock/slock.c
  static Lock **locks;
  static int nscreens;
  static Bool running = True;
-@@ -112,6 +118,31 @@ getpw(void)
+@@ -116,6 +122,31 @@ getpw(void)
  }
  #endif
  
@@ -97,7 +97,7 @@ Index: slock-patches/slock/slock.c
  static void
  #ifdef HAVE_BSD_AUTH
  readpw(Display *dpy)
-@@ -119,12 +150,15 @@ readpw(Display *dpy)
+@@ -123,12 +154,15 @@ readpw(Display *dpy)
  readpw(Display *dpy, const char *pws)
  #endif
  {
@@ -115,7 +115,7 @@ Index: slock-patches/slock/slock.c
  
  	len = 0;
  	running = True;
-@@ -155,7 +189,28 @@ readpw(Display *dpy, const char *pws)
+@@ -159,7 +193,28 @@ readpw(Display *dpy, const char *pws)
  #ifdef HAVE_BSD_AUTH
  				running = !auth_userokay(getlogin(), NULL, "auth-xlock", passwd);
  #else
@@ -145,13 +145,17 @@ Index: slock-patches/slock/slock.c
  #endif
  				if (running) {
  					XBell(dpy, 100);
-@@ -299,10 +354,10 @@ main(int argc, char **argv) {
- 	dontkillme();
- #endif
+@@ -307,6 +362,7 @@ main(int argc, char **argv) {
  
+ 	/* Check if the current user has a password entry */
+ 	errno = 0;
 +#ifndef HAVE_BSD_AUTH
- 	if (!getpwuid(getuid()))
- 		die("no passwd entry for you\n");
+ 	if (!getpwuid(getuid())) {
+ 		if (errno == 0)
+ 			die("slock: no password entry for current user\n");
+@@ -314,7 +370,6 @@ main(int argc, char **argv) {
+ 			die("slock: getpwuid: %s\n", strerror(errno));
+ 	}
  
 -#ifndef HAVE_BSD_AUTH
  	pws = getpw();

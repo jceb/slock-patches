@@ -97,11 +97,11 @@ Index: slock-patches/slock/slock.c
  static void
  #ifdef HAVE_BSD_AUTH
  readpw(Display *dpy)
-@@ -123,12 +154,15 @@ readpw(Display *dpy)
+@@ -123,12 +154,14 @@ readpw(Display *dpy)
  readpw(Display *dpy, const char *pws)
  #endif
  {
--	char buf[32], passwd[256];
+-	char buf[32], passwd[256], *encrypted;
 -	int num, screen;
 +	char buf[32];
 +	struct passwd* pw;
@@ -111,15 +111,16 @@ Index: slock-patches/slock/slock.c
  	XEvent ev;
  	static int oldc = INIT;
 +	pam_handle_t *pamh;
-+
  
  	len = 0;
  	running = True;
-@@ -159,7 +193,28 @@ readpw(Display *dpy, const char *pws)
+@@ -159,11 +192,28 @@ readpw(Display *dpy, const char *pws)
  #ifdef HAVE_BSD_AUTH
- 				running = !auth_userokay(getlogin(), NULL, "auth-xlock", passwd);
+ 				running = !auth_userokay(getlogin(), NULL, "auth-slock", passwd);
  #else
--				running = !!strcmp(crypt(passwd, pws), pws);
+-				errno = 0;
+-				if (!(encrypted = crypt(passwd, pws)))
+-					fprintf(stderr, "slock: crypt: %s\n", strerror(errno));
 +				pw = getpwuid(getuid());
 +				retval = pam_start(pam_service, pw->pw_name, &pamc, &pamh);
 +
@@ -139,13 +140,14 @@ Index: slock-patches/slock/slock.c
 +				running = 1;
 +				if (retval == PAM_SUCCESS)
 +					running = 0;
-+				else
+ 				else
+-					running = !!strcmp(encrypted, pws);
 +					fprintf(stderr, "slock: %s\n", pam_strerror(pamh, retval));
 +				pam_end(pamh, retval);
  #endif
  				if (running) {
  					XBell(dpy, 100);
-@@ -307,6 +362,7 @@ main(int argc, char **argv) {
+@@ -307,14 +357,15 @@ main(int argc, char **argv) {
  
  	/* Check if the current user has a password entry */
  	errno = 0;
@@ -153,11 +155,13 @@ Index: slock-patches/slock/slock.c
  	if (!getpwuid(getuid())) {
  		if (errno == 0)
  			die("slock: no password entry for current user\n");
-@@ -314,7 +370,6 @@ main(int argc, char **argv) {
+ 		else
  			die("slock: getpwuid: %s\n", strerror(errno));
  	}
- 
+-
 -#ifndef HAVE_BSD_AUTH
++#endif
++#ifdef HAVE_BSD_AUTH
  	pws = getpw();
- #endif
- 
+ 	if (strlen(pws) < 2)
+ 		die("slock: failed to get user password hash.\n");

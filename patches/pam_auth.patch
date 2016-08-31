@@ -65,7 +65,7 @@ Index: slock-patches/slock/slock.c
  static Lock **locks;
  static int nscreens;
  static Bool running = True;
-@@ -116,6 +122,31 @@ getpw(void)
+@@ -124,6 +130,31 @@ getpw(void)
  }
  #endif
  
@@ -97,7 +97,7 @@ Index: slock-patches/slock/slock.c
  static void
  #ifdef HAVE_BSD_AUTH
  readpw(Display *dpy)
-@@ -123,12 +154,14 @@ readpw(Display *dpy)
+@@ -131,12 +162,14 @@ readpw(Display *dpy)
  readpw(Display *dpy, const char *pws)
  #endif
  {
@@ -114,7 +114,7 @@ Index: slock-patches/slock/slock.c
  
  	len = 0;
  	running = True;
-@@ -159,11 +192,28 @@ readpw(Display *dpy, const char *pws)
+@@ -167,11 +200,28 @@ readpw(Display *dpy, const char *pws)
  #ifdef HAVE_BSD_AUTH
  				running = !auth_userokay(getlogin(), NULL, "auth-slock", passwd);
  #else
@@ -147,21 +147,16 @@ Index: slock-patches/slock/slock.c
  #endif
  				if (running) {
  					XBell(dpy, 100);
-@@ -307,14 +357,15 @@ main(int argc, char **argv) {
- 
- 	/* Check if the current user has a password entry */
- 	errno = 0;
-+#ifndef HAVE_BSD_AUTH
- 	if (!getpwuid(getuid())) {
- 		if (errno == 0)
- 			die("slock: no password entry for current user\n");
+@@ -321,11 +371,9 @@ main(int argc, char **argv) {
  		else
  			die("slock: getpwuid: %s\n", strerror(errno));
  	}
 -
--#ifndef HAVE_BSD_AUTH
-+#endif
-+#ifdef HAVE_BSD_AUTH
+ #ifndef HAVE_BSD_AUTH
++	/* the contents of pws are ignored by the pam_auth patch */
  	pws = getpw();
- 	if (strlen(pws) < 2)
- 		die("slock: failed to get user password hash.\n");
+-	if (strlen(pws) < 2)
+-		die("slock: failed to get user password hash.\n");
+ #endif
+ 
+ 	if (!(dpy = XOpenDisplay(NULL)))

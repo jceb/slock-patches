@@ -10,15 +10,7 @@ Index: slock-patches/slock/slock.c
  
  #if HAVE_BSD_AUTH
  #include <login_cap.h>
-@@ -166,6 +167,7 @@ readpw(Display *dpy, const char *pws)
- 	struct passwd* pw;
- 	int num, screen, retval;
- 	unsigned int len, color;
-+	Window root = RootWindow(dpy, 0);
- 	KeySym ksym;
- 	XEvent ev;
- 	static int oldc = INIT;
-@@ -238,6 +240,15 @@ readpw(Display *dpy, const char *pws)
+@@ -238,6 +239,15 @@ readpw(Display *dpy, const char *pws)
  				if (len)
  					passwd[len--] = 0;
  				break;
@@ -29,7 +21,7 @@ Index: slock-patches/slock/slock.c
 +			case XF86XK_AudioStop:
 +			case XF86XK_AudioPrev:
 +			case XF86XK_AudioNext:
-+				XSendEvent(dpy, root, True, KeyPressMask, &ev);
++				XSendEvent(dpy, locks[0]->root, True, KeyPressMask, &ev);
 +				break;
  			default:
  				if (num && !iscntrl((int)buf[0]) && (len + num < sizeof(passwd))) {

@@ -10,7 +10,7 @@ Index: slock-patches/slock/slock.c
  
  #if HAVE_BSD_AUTH
  #include <login_cap.h>
-@@ -238,6 +239,15 @@ readpw(Display *dpy, const char *pws)
+@@ -237,6 +238,15 @@ readpw(Display *dpy, const char *pws)
  				if (len)
  					passwd[len--] = 0;
  				break;

@@ -64,8 +64,8 @@ Index: slock-patches/slock/slock.c
 +char passwd[256];
  static Lock **locks;
  static int nscreens;
- static Bool running = True;
-@@ -124,6 +130,31 @@ getpw(void)
+ static Bool rr;
+@@ -122,6 +128,31 @@ getpw(void)
  }
  #endif
  
@@ -97,15 +97,15 @@ Index: slock-patches/slock/slock.c
  static void
  #ifdef HAVE_BSD_AUTH
  readpw(Display *dpy)
-@@ -131,12 +162,14 @@ readpw(Display *dpy)
+@@ -129,12 +160,14 @@ readpw(Display *dpy)
  readpw(Display *dpy, const char *pws)
  #endif
  {
 -	char buf[32], passwd[256], *encrypted;
--	int num, screen;
+-	int num, screen, running, failure;
 +	char buf[32];
 +	struct passwd* pw;
-+	int num, screen, retval;
++	int num, screen, running, failure, retval;
  	unsigned int len, color;
  	KeySym ksym;
  	XEvent ev;
@@ -113,8 +113,8 @@ Index: slock-patches/slock/slock.c
 +	pam_handle_t *pamh;
  
  	len = 0;
- 	running = True;
-@@ -167,11 +200,28 @@ readpw(Display *dpy, const char *pws)
+ 	running = 1;
+@@ -166,11 +199,28 @@ readpw(Display *dpy, const char *pws)
  #ifdef HAVE_BSD_AUTH
  				running = !auth_userokay(getlogin(), NULL, "auth-slock", passwd);
  #else
@@ -147,7 +147,7 @@ Index: slock-patches/slock/slock.c
  #endif
  				if (running) {
  					XBell(dpy, 100);
-@@ -321,11 +371,9 @@ main(int argc, char **argv) {
+@@ -346,11 +396,9 @@ main(int argc, char **argv) {
  		else
  			die("slock: getpwuid: %s\n", strerror(errno));
  	}

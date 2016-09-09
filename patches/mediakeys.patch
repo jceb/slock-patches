@@ -2,15 +2,15 @@ Index: slock-patches/slock/slock.c
 ===================================================================
 --- slock-patches.orig/slock/slock.c
 +++ slock-patches/slock/slock.c
-@@ -19,6 +19,7 @@
+@@ -20,6 +20,7 @@
  #include <X11/Xutil.h>
  #include <security/pam_appl.h>
  #include <security/pam_misc.h>
 +#include <X11/XF86keysym.h>
  
- #if HAVE_BSD_AUTH
- #include <login_cap.h>
-@@ -237,6 +238,15 @@ readpw(Display *dpy, const char *pws)
+ #include "arg.h"
+ #include "util.h"
+@@ -228,6 +229,15 @@ readpw(Display *dpy, const char *pws)
  				if (len)
  					passwd[len--] = 0;
  				break;

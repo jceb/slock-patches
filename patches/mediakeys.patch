@@ -10,9 +10,9 @@ Index: slock-patches/slock/slock.c
  
  #include "arg.h"
  #include "util.h"
-@@ -228,6 +229,15 @@ readpw(Display *dpy, const char *pws)
+@@ -229,6 +230,15 @@ readpw(Display *dpy, struct xrandr *rr,
  				if (len)
- 					passwd[len--] = 0;
+ 					passwd[len--] = '\0';
  				break;
 +			case XF86XK_AudioLowerVolume:
 +			case XF86XK_AudioMute:
@@ -24,5 +24,5 @@ Index: slock-patches/slock/slock.c
 +				XSendEvent(dpy, locks[0]->root, True, KeyPressMask, &ev);
 +				break;
  			default:
- 				if (num && !iscntrl((int)buf[0]) && (len + num < sizeof(passwd))) {
- 					memcpy(passwd + len, buf, num);
+ 				if (num && !iscntrl((int)buf[0]) &&
+ 				    (len + num < sizeof(passwd))) {

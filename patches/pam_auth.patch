@@ -10,13 +10,13 @@ Index: slock-patches/slock/config.def.h
 --- slock-patches.orig/slock/config.def.h
 +++ slock-patches/slock/config.def.h
 @@ -6,7 +6,11 @@ static const char *colorname[NUMCOLS] =
- 	"black",     /* after initialization */
- 	"#005577",   /* during input */
- 	"#CC3333",   /* wrong password */
-+	"#9400D3",   /* waiting for PAM */
+ 	[INIT] =   "black",     /* after initialization */
+ 	[INPUT] =  "#005577",   /* during input */
+ 	[FAILED] = "#CC3333",   /* wrong password */
++	[PAM] =    "#9400D3",   /* waiting for PAM */
  };
  
- /* treat a cleared input like a wrong password */
+ /* treat a cleared input like a wrong password (color) */
  static const int failonclear = 1;
 +
 +/* PAM service that's used for authentication */
@@ -147,7 +147,7 @@ Index: slock-patches/slock/slock.c
  				if (running) {
  					XBell(dpy, 100);
  					failure = 1;
-@@ -331,10 +381,9 @@ main(int argc, char **argv) {
+@@ -339,10 +389,9 @@ main(int argc, char **argv) {
  	dontkillme();
  #endif
  

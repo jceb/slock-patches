@@ -9,4 +9,4 @@ Index: slock-patches/slock/config.def.h
 +static const char *group = "nobody";
  
  static const char *colorname[NUMCOLS] = {
- 	"black",     /* after initialization */
+ 	[INIT] =   "black",     /* after initialization */

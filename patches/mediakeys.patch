@@ -12,7 +12,7 @@ Index: slock-patches/slock/slock.c
  #include "util.h"
 @@ -229,6 +230,15 @@ readpw(Display *dpy, struct xrandr *rr,
  				if (len)
- 					passwd[len--] = '\0';
+ 					passwd[--len] = '\0';
  				break;
 +			case XF86XK_AudioLowerVolume:
 +			case XF86XK_AudioMute:

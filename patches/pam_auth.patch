@@ -9,7 +9,14 @@ Index: slock-patches/slock/config.def.h
 ===================================================================
 --- slock-patches.orig/slock/config.def.h
 +++ slock-patches/slock/config.def.h
-@@ -6,7 +6,11 @@ static const char *colorname[NUMCOLS] =
+@@ -1,12 +1,16 @@
+ /* user and group to drop privileges to */
+-static const char *user  = "nobody";
+-static const char *group = "nogroup";
++static const char *user  = "root";
++static const char *group = "root";
+ 
+ static const char *colorname[NUMCOLS] = {
  	[INIT] =   "black",     /* after initialization */
  	[INPUT] =  "#005577",   /* during input */
  	[FAILED] = "#CC3333",   /* wrong password */
